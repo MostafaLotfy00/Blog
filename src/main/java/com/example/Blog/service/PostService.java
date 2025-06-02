@@ -43,4 +43,18 @@ public class PostService {
         post.setContent(postDTO.getContent());
         return this.postRepository.save(post);
     }
+
+    public PostDTO update(Long id, PostDTO postDTO){
+        Post post= this.postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("There is no posts with id : "+ id));
+         boolean exist = this.postRepository.existsByTitleAndIdNot(postDTO.getTitle(), id);
+        System.out.println(exist);
+        if(exist){
+            throw new IllegalArgumentException("title field should be unique");
+        }
+        post.setContent(postDTO.getContent());
+        post.setTitle(postDTO.getTitle());
+        post.setDescription(postDTO.getDescription());
+        this.postRepository.save(post);
+        return new PostDTO(post.getId(), post.getTitle(), post.getDescription(), post.getContent());
+    }
 }

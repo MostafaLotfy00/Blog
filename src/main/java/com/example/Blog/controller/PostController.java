@@ -35,5 +35,9 @@ public class PostController {
         Post savedPost= this.postService.save(postDTO);
         return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDTO> update(@PathVariable(name = "id") Long id, @Valid @RequestBody PostDTO postDTO){
+        return new ResponseEntity<>(this.postService.update(id, postDTO), HttpStatus.OK);
+    }
 
 }
