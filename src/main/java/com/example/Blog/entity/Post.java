@@ -1,5 +1,6 @@
 package com.example.Blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,4 +23,8 @@ public class Post {
     private String description;
     @Column(name = "content", nullable = false )
     private String content;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

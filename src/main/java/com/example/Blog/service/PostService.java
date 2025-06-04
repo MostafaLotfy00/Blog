@@ -22,14 +22,14 @@ public class PostService {
     {
         List<PostDTO> posts= new ArrayList<>();
         for(Post post: this.postRepository.findAll()){
-            posts.add(new PostDTO(post.getId(), post.getTitle(),post.getDescription(), post.getContent()));
+            posts.add(new PostDTO(post));
         }
         return posts;
     }
 
     public PostDTO getOne(Long id){
         Post post= this.postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("There is no posts with id : "+ id));
-        return new PostDTO(post.getId(), post.getTitle(), post.getDescription(), post.getContent());
+        return new PostDTO(post);
     }
 
     public Post save(PostDTO postDTO){
@@ -55,6 +55,6 @@ public class PostService {
         post.setTitle(postDTO.getTitle());
         post.setDescription(postDTO.getDescription());
         this.postRepository.save(post);
-        return new PostDTO(post.getId(), post.getTitle(), post.getDescription(), post.getContent());
+        return new PostDTO(post);
     }
 }

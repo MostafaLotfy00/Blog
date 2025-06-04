@@ -1,5 +1,6 @@
 package com.example.Blog.controller;
 
+import com.example.Blog.dto.PostDTO;
 import com.example.Blog.dto.UserDTO;
 import com.example.Blog.dto.UserDetailsDTO;
 import com.example.Blog.entity.User;
@@ -31,5 +32,14 @@ public class UserController {
     @PostMapping("/{id}/userDetails")
     public User saveDetails(@PathVariable(name = "id") Long id, @RequestBody UserDetailsDTO userDetailsDTO){
         return this.userService.saveUserDetails(id, userDetailsDTO);
+    }
+
+    @PutMapping("/{id}/userDetails")
+    public User updateDetails(@PathVariable(name = "id") Long id, @RequestBody UserDetailsDTO userDetailsDTO){
+        return this.userService.upateUserDetails(id, userDetailsDTO);
+    }
+    @PostMapping("/{id}/posts")
+    public User addPost(@PathVariable Long id, @RequestBody PostDTO postDTO){
+        return this.userService.addPost(id, postDTO);
     }
 }
