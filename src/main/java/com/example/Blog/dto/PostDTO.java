@@ -23,13 +23,13 @@ public class PostDTO {
     private String title;
     private String description;
     private String content;
-    private UserDataDTO userDTO;
+    private UserDataDTO user;
     public PostDTO(Post post){
         this.id= post.getId();
         this.title= post.getTitle();
         this.description= post.getDescription();
         this.content= post.getContent();
-        this.userDTO = post.getUser() != null ? new UserDataDTO(post.getUser()) : null;
+        this.user = post.getUser() != null ? new UserDataDTO(post.getUser()) : null;
 
     }
 }

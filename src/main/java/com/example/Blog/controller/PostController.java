@@ -23,8 +23,9 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostDTO> getAll(){
-        return this.postService.getAll();
+    public List<PostDTO> getAll(@RequestParam(value = "pageNo" , defaultValue = "0", required = false) int pageNo,
+                                @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize){
+        return this.postService.getAll(pageNo, pageSize);
     }
     @GetMapping("/{id}")
     public PostDTO getOne(@PathVariable(name = "id") Long id){

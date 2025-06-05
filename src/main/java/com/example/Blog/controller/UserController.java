@@ -1,5 +1,6 @@
 package com.example.Blog.controller;
 
+import com.example.Blog.dto.GetUsersDTO;
 import com.example.Blog.dto.PostDTO;
 import com.example.Blog.dto.UserDTO;
 import com.example.Blog.dto.UserDetailsDTO;
@@ -22,7 +23,7 @@ public class UserController {
         this.userService= userService;
     }
     @GetMapping
-    public List<User> getALl(){
+    public List<GetUsersDTO> getALl(){
         return this.userService.getAll();
     }
     @PostMapping

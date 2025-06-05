@@ -1,5 +1,6 @@
 package com.example.Blog.service;
 
+import com.example.Blog.dto.GetUsersDTO;
 import com.example.Blog.dto.PostDTO;
 import com.example.Blog.dto.UserDTO;
 import com.example.Blog.dto.UserDetailsDTO;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -28,8 +30,9 @@ public class UserService {
         this.modelMapper= modelMapper;
     }
 
-    public List<User> getAll(){
-        return this.userRepository.findAll();
+    public List<GetUsersDTO> getAll(){
+        List<GetUsersDTO> users= this.userRepository.findAll().stream().map(user -> modelMapper.map(user, GetUsersDTO.class)).collect(Collectors.toList());
+        return users;
     }
     public User saveUserDetails(Long id, UserDetailsDTO userDetailsDTO){
         UserDetails userDetails= new UserDetails();

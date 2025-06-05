@@ -5,6 +5,9 @@ import com.example.Blog.entity.Post;
 import com.example.Blog.exception.ResourceNotFoundException;
 import com.example.Blog.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,13 +21,16 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public List<PostDTO> getAll()
+    public List<PostDTO> getAll(int pageNo, int pageSize)
     {
-        List<PostDTO> posts= new ArrayList<>();
-        for(Post post: this.postRepository.findAll()){
-            posts.add(new PostDTO(post));
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Post> postPages= this.postRepository.findAll(pageable);
+        List<Post> posts= postPages.getContent();
+        List<PostDTO> postsDTO= new ArrayList<>();
+        for(Post post: this.postRepository.findAll(pageable)){
+            postsDTO.add(new PostDTO(post));
         }
-        return posts;
+        return postsDTO;
     }
 
     public PostDTO getOne(Long id){
