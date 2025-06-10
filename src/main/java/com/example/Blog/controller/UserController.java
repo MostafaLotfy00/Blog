@@ -1,12 +1,10 @@
 package com.example.Blog.controller;
 
-import com.example.Blog.dto.GetUsersDTO;
-import com.example.Blog.dto.PostDTO;
-import com.example.Blog.dto.UserDTO;
-import com.example.Blog.dto.UserDetailsDTO;
+import com.example.Blog.dto.*;
 import com.example.Blog.entity.User;
 import com.example.Blog.entity.UserDetails;
 import com.example.Blog.service.UserService;
+import com.example.Blog.utils.AppConstants;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +21,11 @@ public class UserController {
         this.userService= userService;
     }
     @GetMapping
-    public List<GetUsersDTO> getALl(){
-        return this.userService.getAll();
+    public GenericResponse<GetUsersDTO> getALl(@RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                               @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+                                               @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORTING, required = false) String sortBy,
+                                               @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_ORDER, required = false) String sortDir){
+        return this.userService.getAll(pageNo, pageSize, sortBy, sortDir);
     }
     @PostMapping
     public User save(@Valid @RequestBody UserDTO userDTO){

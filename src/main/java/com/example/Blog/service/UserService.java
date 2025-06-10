@@ -1,9 +1,6 @@
 package com.example.Blog.service;
 
-import com.example.Blog.dto.GetUsersDTO;
-import com.example.Blog.dto.PostDTO;
-import com.example.Blog.dto.UserDTO;
-import com.example.Blog.dto.UserDetailsDTO;
+import com.example.Blog.dto.*;
 import com.example.Blog.entity.Post;
 import com.example.Blog.entity.User;
 import com.example.Blog.entity.UserDetails;
@@ -12,6 +9,10 @@ import com.example.Blog.repository.UserDetailsRepo;
 import com.example.Blog.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,9 +31,19 @@ public class UserService {
         this.modelMapper= modelMapper;
     }
 
-    public List<GetUsersDTO> getAll(){
-        List<GetUsersDTO> users= this.userRepository.findAll().stream().map(user -> modelMapper.map(user, GetUsersDTO.class)).collect(Collectors.toList());
-        return users;
+    public GenericResponse<GetUsersDTO> getAll(int pageNo, int pageSize, String sortBy, String sortDir){
+        Sort sort= sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable= PageRequest.of(pageNo, pageSize, sort);
+        Page<User> usersPages= this.userRepository.findAll(pageable);
+        List<GetUsersDTO> users= usersPages.stream().map(user -> modelMapper.map(user, GetUsersDTO.class)).collect(Collectors.toList());
+        GenericResponse<GetUsersDTO> genericResponse= new GenericResponse<>();
+        genericResponse.setContent(users);
+        genericResponse.setPageNo(usersPages.getNumber());
+        genericResponse.setPageSize(usersPages.getSize());
+        genericResponse.setTotalPages(usersPages.getTotalPages());
+        genericResponse.setTotalElements(usersPages.getTotalElements());
+        genericResponse.setLast(usersPages.isLast());
+        return genericResponse;
     }
     public User saveUserDetails(Long id, UserDetailsDTO userDetailsDTO){
         UserDetails userDetails= new UserDetails();

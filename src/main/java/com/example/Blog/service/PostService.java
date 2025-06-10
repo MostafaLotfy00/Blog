@@ -1,5 +1,6 @@
 package com.example.Blog.service;
 
+import com.example.Blog.dto.GenericResponse;
 import com.example.Blog.dto.PostDTO;
 import com.example.Blog.entity.Post;
 import com.example.Blog.exception.ResourceNotFoundException;
@@ -8,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -21,16 +24,21 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public List<PostDTO> getAll(int pageNo, int pageSize)
+    public GenericResponse<PostDTO> getAll(int pageNo, int pageSize, String sortBy, String sortDir)
     {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Sort sort= sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> postPages= this.postRepository.findAll(pageable);
         List<Post> posts= postPages.getContent();
-        List<PostDTO> postsDTO= new ArrayList<>();
-        for(Post post: this.postRepository.findAll(pageable)){
-            postsDTO.add(new PostDTO(post));
-        }
-        return postsDTO;
+        List<PostDTO> postsDTO= postPages.stream().map(post -> new PostDTO(post)).collect(Collectors.toList());
+        GenericResponse<PostDTO> postResponse= new GenericResponse<>();
+        postResponse.setContent(postsDTO);
+        postResponse.setPageNo(postPages.getNumber());
+        postResponse.setPageSize(postPages.getSize());
+        postResponse.setTotalPages(postPages.getTotalPages());
+        postResponse.setTotalElements(postPages.getTotalElements());
+        postResponse.setLast(postPages.isLast());
+        return postResponse;
     }
 
     public PostDTO getOne(Long id){
