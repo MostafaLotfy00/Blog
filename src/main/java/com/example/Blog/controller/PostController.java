@@ -1,8 +1,11 @@
 package com.example.Blog.controller;
 
+import com.example.Blog.dto.CommentDTO;
 import com.example.Blog.dto.GenericResponse;
 import com.example.Blog.dto.PostDTO;
+import com.example.Blog.entity.Comment;
 import com.example.Blog.entity.Post;
+import com.example.Blog.service.CommentService;
 import com.example.Blog.service.PostService;
 import com.example.Blog.utils.AppConstants;
 import jakarta.validation.Valid;
@@ -19,9 +22,11 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
     @Autowired
-    public PostController(PostService postService){
+    public PostController(PostService postService, CommentService commentService){
         this.postService=postService;
+        this.commentService= commentService;
     }
 
     @GetMapping
@@ -43,6 +48,14 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostDTO> update(@PathVariable(name = "id") Long id, @Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(this.postService.update(id, postDTO), HttpStatus.OK);
+    }
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Comment> addComment(@PathVariable(value = "postId") Long id, @RequestBody CommentDTO commentDTO){
+        return new ResponseEntity<>(this.postService.addComment(id, commentDTO), HttpStatus.CREATED);
+    }
+    @GetMapping("/{postId}/comments")
+    public List<Comment> getComments(@PathVariable(value = "postId") Long id){
+        return this.commentService.findByPostId(id);
     }
 
 }

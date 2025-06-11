@@ -6,6 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +32,11 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+        comment.setPost(this);
+    }
 }

@@ -1,10 +1,14 @@
 package com.example.Blog.service;
 
+import com.example.Blog.dto.CommentDTO;
 import com.example.Blog.dto.GenericResponse;
 import com.example.Blog.dto.PostDTO;
+import com.example.Blog.entity.Comment;
 import com.example.Blog.entity.Post;
+import com.example.Blog.entity.User;
 import com.example.Blog.exception.ResourceNotFoundException;
 import com.example.Blog.repository.PostRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +23,11 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private ModelMapper modelMapper;
     @Autowired
-    public PostService(PostRepository postRepository){
+    public PostService(PostRepository postRepository, ModelMapper modelMapper){
         this.postRepository = postRepository;
+        this.modelMapper= modelMapper;
     }
 
     public GenericResponse<PostDTO> getAll(int pageNo, int pageSize, String sortBy, String sortDir)
@@ -30,7 +36,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> postPages= this.postRepository.findAll(pageable);
         List<Post> posts= postPages.getContent();
-        List<PostDTO> postsDTO= postPages.stream().map(post -> new PostDTO(post)).collect(Collectors.toList());
+        List<PostDTO> postsDTO= posts.stream().map(post -> new PostDTO(post)).collect(Collectors.toList());
         GenericResponse<PostDTO> postResponse= new GenericResponse<>();
         postResponse.setContent(postsDTO);
         postResponse.setPageNo(postPages.getNumber());
@@ -70,5 +76,13 @@ public class PostService {
         post.setDescription(postDTO.getDescription());
         this.postRepository.save(post);
         return new PostDTO(post);
+    }
+
+    public Comment addComment(Long id,CommentDTO commentDTO){
+        Post post= this.postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("There is no posts with id: "+ id));
+        Comment comment= this.modelMapper.map(commentDTO, Comment.class);
+        post.addComment(comment);
+        this.postRepository.save(post);
+        return comment;
     }
 }
